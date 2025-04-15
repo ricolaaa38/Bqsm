@@ -1,0 +1,4 @@
+CREATE TABLE document_data (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    content TEXT NOT NULL
+);
