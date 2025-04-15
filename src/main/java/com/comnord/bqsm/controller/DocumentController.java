@@ -1,5 +1,6 @@
 package com.comnord.bqsm.controller;
 
+import com.comnord.bqsm.entity.Section;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,8 +25,11 @@ public class DocumentController {
     @PostMapping("/upload")
     public String uploadDocument(@RequestParam("file")MultipartFile file) {
         try {
-            List<String> paragraphs = wordDocumentService.readWordDocument((file.getInputStream()));
-            documentDataService.saveDocumentData(paragraphs);
+            System.out.println("début du traitement du fichier");
+            List<Section> sections = wordDocumentService.readWordDocument((file.getInputStream()));
+            System.out.println("Sections extraites : " + sections.size());
+            documentDataService.saveSections(sections);
+            System.out.println("Données sauvegardées dans la base de données");
             return "Document uploaded and data saved successfully!";
         } catch (IOException e) {
             e.printStackTrace();

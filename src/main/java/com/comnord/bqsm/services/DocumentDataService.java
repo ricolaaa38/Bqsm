@@ -1,6 +1,6 @@
 package com.comnord.bqsm.services;
 
-import com.comnord.bqsm.entity.DocumentData;
+import com.comnord.bqsm.entity.Section;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.comnord.bqsm.repository.DocumentDataRepository;
@@ -13,11 +13,7 @@ public class DocumentDataService {
     @Autowired
     private DocumentDataRepository repository;
 
-    public void saveDocumentData(List<String> paragraphs) {
-        for (String paragraph : paragraphs) {
-            DocumentData data = new DocumentData();
-            data.setContent(paragraph);
-            repository.save(data);
-        }
+    public void saveSections(List<Section> sections) {
+        repository.saveAll(sections);
     }
 }
