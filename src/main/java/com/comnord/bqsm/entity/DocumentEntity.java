@@ -3,19 +3,16 @@ package com.comnord.bqsm.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.List;
-
-@Entity
+@Entity(name = "breves")
 @Data
-public class Section {
+public class DocumentEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
-
-    @OneToMany(mappedBy = "section", cascade = CascadeType.ALL)
-    private List<SubSection> subSections;
-
+    private String zone;
+    private String report;
     private String comment;
+
 }

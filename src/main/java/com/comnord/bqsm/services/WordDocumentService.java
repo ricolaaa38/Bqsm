@@ -1,98 +1,103 @@
 package com.comnord.bqsm.services;
 
-import com.comnord.bqsm.entity.Section;
-import com.comnord.bqsm.entity.SubSection;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class WordDocumentService {
 
     private static final Logger logger = LoggerFactory.getLogger(WordDocumentService.class);
+    private static final String BREVES_MARKER = "Breves";
+    private static final String TITRE_MARKER = "Titre";
+    private static final String ZONE_LIEU_MARKER = "Zone_lieu";
+    private static final String COMPTE_RENDU_MARKER = "Compte-rendu";
+    private static final String COMMENTAIRE_MARKER = "Commentaire";
 
-    /**
-     * Lit un document Word et extrait les sections et sous-sections.
-     *
-     * @param inputStream le flux d'entrée du document Word
-     * @return une liste de sections extraites du document
-     * @throws IOException si une erreur survient lors de la lecture du document
-     */
-    public List<Section> readWordDocument(InputStream inputStream) throws IOException {
-        if (inputStream == null) {
-            throw new IllegalArgumentException("InputStream cannot be null");
-        }
+    public List<Map<String, String>> processDocument(MultipartFile file) throws IOException {
+        List<Map<String, String>> extractedDataList = new ArrayList<>();
+        try (InputStream is = file.getInputStream()) {
+            XWPFDocument document = new XWPFDocument(is);
+            List<XWPFParagraph> paragraphs = document.getParagraphs();
 
-        List<Section> sections = new ArrayList<>();
-        try (XWPFDocument document = new XWPFDocument(inputStream)) {
-            Section currentSection = null;
-            SubSection currentSubSection = null;
+            Map<String, String> currentData = new HashMap<>();
+            String currentKey = null;
+            StringBuilder currentValue = new StringBuilder();
 
-            for (XWPFParagraph paragraph : document.getParagraphs()) {
+            for (XWPFParagraph paragraph : paragraphs) {
                 String text = paragraph.getText().trim();
-                logger.debug("Processing paragraph: {}", text);
+                logger.debug("Paragraph text: '{}'", text);
 
-                if (text.startsWith("Titre :")) { // Titre de la section
-                    if (currentSection != null) {
-                        sections.add(currentSection); // Ajoute la section précédente
+                if (text.equalsIgnoreCase(BREVES_MARKER)) {
+                    if (currentKey != null) {
+                        currentData.put(currentKey, currentValue.toString().trim());
+                        logger.debug("Saved data for key: {}", currentKey);
                     }
-                    currentSection = new Section();
-                    currentSection.setTitle(getContentAfterColon(text)); // Extrait le titre après "Titre :"
-                    currentSection.setSubSections(new ArrayList<>());
-                    logger.debug("Found Title: {}", currentSection.getTitle());
-                } else if (text.startsWith("Zone :")) { // Sous-titre
-                    if (currentSection == null) {
-                        logger.error("Zone found without a preceding Title");
-                        throw new IllegalStateException("Zone found without a preceding Title");
+                    if (!currentData.isEmpty()) {
+                        extractedDataList.add(currentData);
+                        currentData = new HashMap<>();
                     }
-                    currentSubSection = new SubSection();
-                    currentSubSection.setSubtitle(getContentAfterColon(text)); // Extrait la zone après "Zone :"
-                    currentSubSection.setContent("");
-                    currentSubSection.setSection(currentSection);
-                    currentSection.getSubSections().add(currentSubSection);
-                    logger.debug("Found Zone: {}", currentSubSection.getSubtitle());
-                } else if (text.startsWith("Compte-rendu :")) { // Début du compte-rendu
-                    if (currentSubSection == null) {
-                        logger.error("Compte-rendu found without a preceding Zone");
-                        throw new IllegalStateException("Compte-rendu found without a preceding Zone");
-                    }
-                    currentSubSection.setContent(currentSubSection.getContent() + getContentAfterColon(text) + "\n");
-                    logger.debug("Found Compte-rendu: {}", getContentAfterColon(text));
-                } else if (text.startsWith("Commentaire :")) { // Commentaire
-                    if (currentSection == null) {
-                        logger.error("Commentaire found without a preceding Title");
-                        throw new IllegalStateException("Commentaire found without a preceding Title");
-                    }
-                    currentSection.setComment(getContentAfterColon(text)); // Extrait le commentaire après "Commentaire :"
-                    logger.debug("Found Commentaire: {}", getContentAfterColon(text));
-                } else if (currentSubSection != null) { // Texte additionnel pour le compte-rendu
-                    currentSubSection.setContent(currentSubSection.getContent() + text + "\n");
-                    logger.debug("Adding additional content to Compte-rendu: {}", text);
+                    currentKey = null;
+                    currentValue = new StringBuilder();
+                } else if (startsWithAnyMarker(text)) {
+                    saveCurrentData(currentData, currentKey, currentValue);
+                    currentKey = getKeyForMarker(text);
+                    currentValue = new StringBuilder(getTextAfterMarker(text, currentKey));
+                } else if (!text.isEmpty()) {
+                    appendToCurrentValue(currentKey, currentValue, text);
                 }
             }
-
-            // Ajoute la dernière section
-            if (currentSection != null) {
-                sections.add(currentSection);
+            saveCurrentData(currentData, currentKey, currentValue);
+            if (!currentData.isEmpty()) {
+                extractedDataList.add(currentData);
             }
         }
-        return sections;
+        logger.info("Données extraites : {}", extractedDataList);
+        return extractedDataList;
     }
 
-    // Méthode pour extraire le contenu après un ":"
-    private String getContentAfterColon(String text) {
-        int colonIndex = text.indexOf(':');
-        if (colonIndex == -1) {
-            return text; // Retourne le texte complet si ":" n'est pas trouvé
+    private void saveCurrentData(Map<String, String> currentData, String currentKey, StringBuilder currentValue) {
+        if (currentKey != null) {
+            currentData.put(currentKey, currentValue.toString().trim());
+            logger.debug("Saved data for key: {}", currentKey);
         }
-        return text.substring(colonIndex + 1).trim();
+    }
+
+    private boolean startsWithAnyMarker(String text) {
+        return text.startsWith(TITRE_MARKER) ||
+                text.startsWith(ZONE_LIEU_MARKER) ||
+                text.startsWith(COMPTE_RENDU_MARKER) ||
+                text.startsWith(COMMENTAIRE_MARKER);
+    }
+
+    private String getKeyForMarker(String text) {
+        if (text.startsWith(TITRE_MARKER)) return "Titre";
+        if (text.startsWith(ZONE_LIEU_MARKER)) return "Zone_lieu";
+        if (text.startsWith(COMPTE_RENDU_MARKER)) return "Compte-rendu";
+        if (text.startsWith(COMMENTAIRE_MARKER)) return "Commentaire";
+        return null;
+    }
+
+    private String getTextAfterMarker(String text, String key) {
+        switch (key) {
+            case "Titre": return text.substring(TITRE_MARKER.length()).trim();
+            case "Zone_lieu": return text.substring(ZONE_LIEU_MARKER.length()).trim();
+            case "Compte-rendu": return text.substring(COMPTE_RENDU_MARKER.length()).trim();
+            case "Commentaire": return text.substring(COMMENTAIRE_MARKER.length()).trim();
+            default: return "";
+        }
+    }
+
+    private void appendToCurrentValue(String currentKey, StringBuilder currentValue, String text) {
+        if (currentKey != null) {
+            currentValue.append(" ").append(text);
+        }
     }
 }
-
