@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -22,7 +22,7 @@ public class BreveEntity {
     private String bqsmNumb;
 
     @Column(name = "date", nullable = false)
-    private Date date;
+    private LocalDateTime date;
 
     @Column(name = "titre", nullable = false)
     private String titre;

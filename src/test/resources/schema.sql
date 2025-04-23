@@ -4,9 +4,9 @@ CREATE TABLE breves {
 	date DATE NOT NULL,
 	titre VARCHAR(96) NOT NULL,
 	categorie VARCHAR(48) NOT NULL,
-	zone_maritime VARCHAR(96),
+	zone VARCHAR(96),
 	pays VARCHAR(48),
 	latitude DECIMAL(9,6),
 	longitude DECIMAL(9,6),
-	description TEXT,
+	contenu TEXT,
 }
