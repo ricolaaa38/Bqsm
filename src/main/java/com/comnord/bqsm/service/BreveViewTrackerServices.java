@@ -1,0 +1,35 @@
+package com.comnord.bqsm.service;
+
+import com.comnord.bqsm.exception.ServiceException;
+import com.comnord.bqsm.model.BreveEntity;
+import com.comnord.bqsm.model.BreveViewTrackerEntity;
+import com.comnord.bqsm.repository.BreveViewTrackerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class BreveViewTrackerServices {
+
+    @Autowired
+    private BreveViewTrackerRepository breveViewTrackerRepository;
+
+    @Autowired
+    private BreveServices breveServices;
+
+    public BreveViewTrackerEntity getBreveViewTrackerByBreveId(BreveEntity breveId) {
+        try {
+            return breveViewTrackerRepository.findViewTrackerByBreveId(breveId);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to retrieve BreveViewTracker", e);
+        }
+    }
+
+    public BreveViewTrackerEntity saveBreveViewTracker(BreveViewTrackerEntity breveViewTracker) {
+        try {
+            return breveViewTrackerRepository.save(breveViewTracker);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to save BreveViewTracker", e);
+        }
+    }
+
+}

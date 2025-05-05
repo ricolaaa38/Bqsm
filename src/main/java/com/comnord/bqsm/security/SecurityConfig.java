@@ -18,8 +18,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/api/breves/", "/api/breves/upload", "/api/breves/delete", "/api/breves/update",
-                                        "/api/commentaires/", "/api/commentaires/create").permitAll()
+                                .requestMatchers("/api/**").permitAll()
                                 .anyRequest().authenticated()
                 );
         return http.build();

@@ -18,6 +18,21 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
+    @ExceptionHandler(PicturesNotFoundException.class)
+    public ResponseEntity<String> handlePicturesNotFound(PicturesNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(IntervenantsNotFoundException.class)
+    public ResponseEntity<String> handleIntervenantsNotFound(IntervenantsNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ContributeursNotFoundException.class)
+    public ResponseEntity<String> handleContributeursNotFound(ContributeursNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
     @ExceptionHandler(BrevesNotFoundException.class)
     public ResponseEntity<String> handleBrevesNotFound(BrevesNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
@@ -26,6 +41,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidFileException.class)
     public ResponseEntity<String> handleInvalidFileException(InvalidFileException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(BrevesViewTrackerNotFoundException.class)
+    public ResponseEntity<String> handleBrevesViewTrackerNotFound(BrevesViewTrackerNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
     @ExceptionHandler(DataExtractionException.class)

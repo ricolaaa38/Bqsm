@@ -3,7 +3,7 @@ package com.comnord.bqsm.controller;
 import com.comnord.bqsm.model.BreveEntity;
 import com.comnord.bqsm.model.CommentaireEntity;
 import com.comnord.bqsm.service.BreveServices;
-import com.comnord.bqsm.service.CommentaireService;
+import com.comnord.bqsm.service.CommentaireServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +16,7 @@ import java.util.List;
 public class CommentaireControllers {
 
     @Autowired
-    private CommentaireService commentaireService;
+    private CommentaireServices commentaireService;
 
     @Autowired
     private BreveServices breveServices;
