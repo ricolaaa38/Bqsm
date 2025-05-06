@@ -62,8 +62,8 @@ public class BreveEntity {
     private List<ContributeurEntity> contributeurs;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "breveId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private BreveViewTrackerEntity breveViewTracker;
+    @OneToMany(mappedBy = "breveId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BreveViewTrackerEntity> breveViewTracker;
 
     @JsonIgnore
     @OneToMany(mappedBy = "breveId", cascade = CascadeType.ALL, orphanRemoval = true)

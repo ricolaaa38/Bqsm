@@ -4,7 +4,7 @@ package com.comnord.bqsm.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "application_view_tracker")
@@ -17,8 +17,8 @@ public class ApplicationViewTrackerEntity {
     private int id;
 
     @Column(name = "date", nullable = false)
-    private Date date;
+    private LocalDateTime date;
 
-    @Column(name = "view_number", nullable = false)
-    private int viewNumber;
+    @Column(name = "user_email", nullable = false)
+    private String userEmail;
 }

@@ -17,6 +17,9 @@ public class LinkEntity {
     @JoinColumn(name = "id_breve", nullable = false)
     private BreveEntity breveId;
 
+    @Column(name="name", nullable = false)
+    private String name;
+
     @Column(name = "link", nullable = false)
     private String link;
 

@@ -48,6 +48,21 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
+    @ExceptionHandler(ApplicationViewTrackerNotFound.class)
+    public ResponseEntity<String> handleApplicationViewTrackerNotFound(ApplicationViewTrackerNotFound ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(LinksNotFoundException.class)
+    public ResponseEntity<String> handleLinksNotFound(LinksNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(FiltresNotFoundException.class)
+    public ResponseEntity<String> handleFiltresNotFound(FiltresNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
     @ExceptionHandler(DataExtractionException.class)
     public ResponseEntity<String> handleDataExtractionException(DataExtractionException ex) {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ex.getMessage());
