@@ -38,4 +38,33 @@ public class LinkServices {
             throw new ServiceException("Failed to save link", e);
         }
     }
+
+    public LinkEntity updateLink(LinkEntity link, LinkEntity existingLink) {
+        try {
+            boolean isModified = false;
+            if (!link.getName().isEmpty() && !link.getName().equals(existingLink.getName())) {
+                existingLink.setName(link.getName());
+                isModified = true;
+            }
+           if (!link.getLink().isEmpty() && !link.getLink().equals(existingLink.getLink())) {
+               existingLink.setLink(link.getLink());
+               isModified = true;
+           }
+            if (isModified) {
+                return linkRepository.save(existingLink);
+            } else {
+                throw new ServiceException("No changes detected for link with ID: " + link.getId());
+            }
+        } catch (Exception e) {
+            throw new ServiceException("Failed to update link", e);
+        }
+    }
+
+    public void deleteLinkById(int id) {
+        try {
+            linkRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to delete link with ID: " + id, e);
+        }
+    }
 }

@@ -40,4 +40,12 @@ public class PictureServices {
             throw new ServiceException("Failed to save picture", e);
         }
     }
+
+    public void deletePictureById(int id) {
+        try {
+            pictureRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to delete picture with ID: " + id, e);
+        }
+    }
 }

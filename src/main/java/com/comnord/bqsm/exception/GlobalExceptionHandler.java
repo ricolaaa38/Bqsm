@@ -63,6 +63,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
+    @ExceptionHandler(DossierArborescenceNotFoundException.class)
+    public ResponseEntity<String> handleDossierArborescenceNotFound(DossierArborescenceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(FichiersArborescenceNotFoundException.class)
+    public ResponseEntity<String> handleFichiersArborescenceNotFound(FichiersArborescenceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
     @ExceptionHandler(DataExtractionException.class)
     public ResponseEntity<String> handleDataExtractionException(DataExtractionException ex) {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ex.getMessage());
