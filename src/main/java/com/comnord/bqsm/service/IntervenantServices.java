@@ -41,4 +41,29 @@ public class IntervenantServices {
         }
     }
 
+    public IntervenantEntity updateIntervenant(IntervenantEntity intervenant, IntervenantEntity existingIntervenant) {
+        try {
+            boolean isModified = false;
+            if (!intervenant.getName().isEmpty() && !intervenant.getName().equals(existingIntervenant.getName())) {
+                existingIntervenant.setName(intervenant.getName());
+                isModified = true;
+            }
+            if (isModified) {
+                return intervenantRepository.save(existingIntervenant);
+            } else {
+                throw new ServiceException("No changes detected for intervenant with ID: " + intervenant.getId());
+            }
+        } catch (Exception e) {
+            throw new ServiceException("Failed to update intervenant", e);
+        }
+    }
+
+    public void deleteIntervenantById(int id) {
+        try {
+            intervenantRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to delete intervenant with id: " + id, e);
+        }
+    }
+
 }

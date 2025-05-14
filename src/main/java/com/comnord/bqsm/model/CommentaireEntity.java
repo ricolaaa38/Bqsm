@@ -3,7 +3,7 @@ package com.comnord.bqsm.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "commentaires")
@@ -20,7 +20,7 @@ public class CommentaireEntity {
     private BreveEntity breveId;
 
     @Column(name = "date", nullable = false)
-    private Date date;
+    private LocalDate date;
 
     @Column(name = "redacteur", nullable = false)
     private String redacteur;

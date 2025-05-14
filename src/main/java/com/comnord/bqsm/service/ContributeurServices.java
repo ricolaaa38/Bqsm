@@ -40,4 +40,29 @@ public class ContributeurServices {
             throw new ServiceException("Failed to save contributeur", e);
         }
     }
+
+    public ContributeurEntity updateContributeur(ContributeurEntity contributeur, ContributeurEntity existingContributeur) {
+        try {
+            boolean isModified = false;
+            if (!contributeur.getName().isEmpty() && !contributeur.getName().equals(existingContributeur.getName())) {
+                existingContributeur.setName(contributeur.getName());
+                isModified = true;
+            }
+            if (isModified) {
+                return contributeurRepository.save(existingContributeur);
+            } else {
+                throw new ServiceException("No changes detected for contributeur with ID: " + contributeur.getId());
+            }
+        } catch (Exception e) {
+            throw new ServiceException("Failed to update contributeur", e);
+        }
+    }
+
+    public void deleteContributeurById(int id) {
+        try {
+            contributeurRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to delete contributeur with ID: " + id, e);
+        }
+    }
 }
