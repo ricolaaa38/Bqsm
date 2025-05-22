@@ -3,6 +3,7 @@ package com.comnord.bqsm.controller;
 import com.comnord.bqsm.exception.DossierArborescenceNotFoundException;
 import com.comnord.bqsm.model.DossierArborescenceEntity;
 import com.comnord.bqsm.model.FichierArborescenceEntity;
+import com.comnord.bqsm.model.dto.DossierDTO;
 import com.comnord.bqsm.model.dto.FolderChildrenDTO;
 import com.comnord.bqsm.repository.DossierArborescenceRepository;
 import com.comnord.bqsm.repository.FichierArborescenceRepository;
@@ -10,6 +11,7 @@ import com.comnord.bqsm.service.DossierArborescenceServices;
 import com.comnord.bqsm.service.FichierArborescenceServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -58,15 +60,31 @@ public class ArborescenceControllers {
     }
 
     @PostMapping("/create-folder")
-    public ResponseEntity<?> createFolder(@RequestBody DossierArborescenceEntity dossier) {
-        Optional<DossierArborescenceEntity> alreadyExistFolder = dossierArborescenceRepository.findDossierByParentIdAndName(dossier.getParentId(), dossier.getName());
-        if (alreadyExistFolder.isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Le dossier '" + dossier.getName() + "' existe déjà à cette endroit.");
+    public ResponseEntity<?> createFolder(@RequestBody DossierDTO dossierDTO) {
+        DossierArborescenceEntity newFolder = new DossierArborescenceEntity();
+        newFolder.setName(dossierDTO.getName());
+        if (dossierDTO.getParentId() != null) {
+            Optional<DossierArborescenceEntity> parentOpt = dossierArborescenceRepository.findById(dossierDTO.getParentId());
+            if (parentOpt.isPresent()) {
+                newFolder.setParentId(parentOpt.get());
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Parent introuvable avec l'ID: " + dossierDTO.getParentId());
+            }
         } else {
-            DossierArborescenceEntity addDossier = dossierArborescenceServices.saveDossier(dossier);
+            newFolder.setParentId(null);
+        }
+        Optional<DossierArborescenceEntity> alreadyExistFolder =
+                dossierArborescenceRepository.findDossierByParentIdAndName(newFolder.getParentId(), newFolder.getName());
+        if (alreadyExistFolder.isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Le dossier '" + newFolder.getName() + "' existe déjà à cet endroit.");
+        } else {
+            DossierArborescenceEntity addDossier = dossierArborescenceServices.saveDossier(newFolder);
             return ResponseEntity.status(HttpStatus.CREATED).body(addDossier);
         }
     }
+
 
     @PostMapping("/update-folder")
     public ResponseEntity<?> updateFolder(@RequestBody DossierArborescenceEntity dossier) {
@@ -83,21 +101,38 @@ public class ArborescenceControllers {
         }
     }
 
-    @PostMapping("/create-file")
-    public ResponseEntity<?> createFile(@RequestParam DossierArborescenceEntity parentId, @RequestParam String name, @RequestParam MultipartFile file) {
+    @PostMapping(value = "/create-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> createFile(
+            @RequestParam(required = false) Integer parentId,
+            @RequestParam String name,
+            @RequestParam MultipartFile file
+    ) {
         try {
-            Optional<FichierArborescenceEntity> alreadyExistFile = fichierArborescenceRepository.findFileByparentIdAndName(parentId, name);
+            DossierArborescenceEntity parent = null;
+            if (parentId != null) {
+                Optional<DossierArborescenceEntity> parentOpt = dossierArborescenceRepository.findById(parentId);
+                if (parentOpt.isPresent()) {
+                    parent = parentOpt.get();
+                } else {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body("Parent introuvable avec l'ID: " + parentId);
+                }
+            }
+            Optional<FichierArborescenceEntity> alreadyExistFile =
+                    fichierArborescenceRepository.findFileByparentIdAndName(parent, name);
             if (alreadyExistFile.isPresent()) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Un fichier '" + name + "' existe déjà à cette endroit.");
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("Un fichier '" + name + "' existe déjà à cet endroit.");
             }
             FichierArborescenceEntity fichier = new FichierArborescenceEntity();
-            fichier.setParentId(parentId);
+            fichier.setParentId(parent);
             fichier.setName(name);
             fichier.setFile(file.getBytes());
             FichierArborescenceEntity addFichier = fichierArborescenceServices.saveFile(fichier);
             return ResponseEntity.status(HttpStatus.CREATED).body(addFichier);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Une erreur est survenue: " + e.getMessage());
         }
     }
 

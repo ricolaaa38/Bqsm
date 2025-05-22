@@ -30,15 +30,47 @@ public class BreveServices {
     @Autowired
     private WordDocumentService wordDocumentService;
 
-//    public Iterable<BreveEntity> getAllBreves() {
-//       Iterable<BreveEntity> breves = breveRepository.findAll();
-//       if (!breves.iterator().hasNext()) {
-//           throw new BrevesNotFoundException("No breves were found in the database.");
-//       }
-//       return breves;
-//    }
+    public Iterable<BreveEntity> getAllBreves() {
+       Iterable<BreveEntity> breves = breveRepository.findAll();
+       if (!breves.iterator().hasNext()) {
+           throw new BrevesNotFoundException("No breves were found in the database.");
+       }
+       return breves;
+    }
 
-    public Page<BreveEntity> getAllBreves(int page, int size, String zone, String categorie, String intervenant, String contributeur, String startDate, String endDate) {
+    public List<BreveEntity> getAllBrevesForMap(String zone, String categorie, String intervenant, String contributeur, String startDate, String endDate) {
+        Specification<BreveEntity> spec = Specification.where(null);
+
+        if (zone != null && !zone.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("zone"), zone));
+        }
+        if (categorie != null && !categorie.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("categorie"), categorie));
+        }
+        if (intervenant != null && !intervenant.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.join("intervenants").get("name"), intervenant));
+        }
+        if (contributeur != null && !contributeur.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.join("contributeurs").get("name"), contributeur));
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+        try {
+            if (startDate != null && !startDate.isEmpty() && endDate != null && !endDate.isEmpty()) {
+                LocalDateTime start = LocalDateTime.parse(startDate, formatter);
+                LocalDateTime end = LocalDateTime.parse(endDate, formatter);
+                spec = spec.and((root, query, criteriaBuilder) ->
+                        criteriaBuilder.between(root.get("date"), start, end));
+            }
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid date format. Expected ISO format (e.g., 2025-01-01T00:00:00).", e);
+        }
+
+        return breveRepository.findAll(spec);
+    }
+
+    public Page<BreveEntity> getAllBrevesByPage(int page, int size, String zone, String categorie, String intervenant, String contributeur, String startDate, String endDate) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "date"));
 
         Specification<BreveEntity> spec = Specification.where(null);

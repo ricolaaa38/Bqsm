@@ -1,6 +1,7 @@
 package com.comnord.bqsm.controller;
 
 import com.comnord.bqsm.model.BreveEntity;
+import com.comnord.bqsm.model.dto.BreveCoordDTO;
 import com.comnord.bqsm.service.BreveServices;
 import com.comnord.bqsm.service.WordDocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +24,32 @@ public class BreveControllers {
     @Autowired
     private WordDocumentService wordDocumentService;
 
-//    @GetMapping("/")
-//    public ResponseEntity<Iterable<BreveEntity>> getAllBreves() {
-//       return ResponseEntity.ok(breveServices.getAllBreves());
-//    }
+    @GetMapping("/")
+    public ResponseEntity<Iterable<BreveEntity>> getAllBreves() {
+       return ResponseEntity.ok(breveServices.getAllBreves());
+    }
+
+    @GetMapping("/id")
+    public ResponseEntity<BreveEntity> getBreveById(@RequestParam int id) {
+        BreveEntity breve = breveServices.getBreveById(id);
+        return ResponseEntity.ok(breve);
+    }
+
+    @GetMapping("/all-coords")
+    public ResponseEntity<List<BreveCoordDTO>> getAllCoordsForMap(
+            @RequestParam(required = false) String zone,
+            @RequestParam(required = false) String categorie,
+            @RequestParam(required = false) String intervenant,
+            @RequestParam(required = false) String contributeur,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate
+    ) {
+        List<BreveEntity> breves = breveServices.getAllBrevesForMap(zone, categorie, intervenant, contributeur, startDate, endDate);
+        List<BreveCoordDTO> dtos = breves.stream()
+                .map(BreveCoordDTO::new)
+                .toList();
+        return ResponseEntity.ok(dtos);
+    }
 
     @GetMapping("/filtered")
     public ResponseEntity<Page<BreveEntity>> getAllBreves(
@@ -39,7 +62,7 @@ public class BreveControllers {
             @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate) {
 
-        Page<BreveEntity> breves = breveServices.getAllBreves(page, size, zone, categorie, intervenant, contributeur, startDate, endDate);
+        Page<BreveEntity> breves = breveServices.getAllBrevesByPage(page, size, zone, categorie, intervenant, contributeur, startDate, endDate);
         return ResponseEntity.ok(breves);
     }
 

@@ -2,6 +2,7 @@ package com.comnord.bqsm.controller;
 
 import com.comnord.bqsm.model.BreveEntity;
 import com.comnord.bqsm.model.PictureEntity;
+import com.comnord.bqsm.model.dto.PictureDTO;
 import com.comnord.bqsm.repository.PictureRepository;
 import com.comnord.bqsm.service.BreveServices;
 import com.comnord.bqsm.service.PictureServices;
@@ -28,10 +29,11 @@ public class PictureControllers {
     private BreveServices breveServices;
 
     @GetMapping("/")
-    public ResponseEntity<List<PictureEntity>> getPictureByBreveId(@RequestParam int breveId) {
+    public ResponseEntity<List<PictureDTO>> getPictureByBreveId(@RequestParam int breveId) {
         BreveEntity breve = breveServices.getBreveById(breveId);
         List<PictureEntity> pictures = pictureServices.getAllPictureByBreveId(breve);
-        return ResponseEntity.ok(pictures);
+        List<PictureDTO> dtos = pictures.stream().map(PictureDTO::new).toList();
+        return ResponseEntity.ok(dtos);
     }
 
     @PostMapping("/create")
