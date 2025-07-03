@@ -34,7 +34,11 @@ public class IntervenantControllers {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<IntervenantEntity> createintervenant(@RequestBody IntervenantEntity intervenant) {
+    public ResponseEntity<IntervenantEntity> createintervenant(@RequestParam int id, @RequestParam String name) {
+        BreveEntity breve = breveServices.getBreveById(id);
+        IntervenantEntity intervenant = new IntervenantEntity();
+        intervenant.setBreveId(breve);
+        intervenant.setName(name);
         IntervenantEntity addIntervenant = intervenantService.saveIntervenant(intervenant);
         return ResponseEntity.status(HttpStatus.CREATED).body(addIntervenant);
     }

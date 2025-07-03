@@ -165,6 +165,8 @@ public class BreveServices {
 
         updates.forEach((key, value) -> {
             switch (key) {
+                case "id":
+                    break;
                 case "bqsmNumb":
                     existingBreve.setBqsmNumb((String) value);
                     break;

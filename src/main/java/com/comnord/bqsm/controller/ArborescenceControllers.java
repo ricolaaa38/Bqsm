@@ -10,6 +10,7 @@ import com.comnord.bqsm.repository.FichierArborescenceRepository;
 import com.comnord.bqsm.service.DossierArborescenceServices;
 import com.comnord.bqsm.service.FichierArborescenceServices;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +45,21 @@ public class ArborescenceControllers {
     public ResponseEntity<Iterable<FichierArborescenceEntity>> getAllFiles() {
         return ResponseEntity.ok(fichierArborescenceServices.getAllFiles());
     }
+
+    @GetMapping("/get-file/{id}")
+    public ResponseEntity<byte[]> getFile(@PathVariable int id) {
+        Optional<FichierArborescenceEntity> fichierOpt = fichierArborescenceRepository.findById(id);
+        if (fichierOpt.isPresent()) {
+            FichierArborescenceEntity fichier = fichierOpt.get();
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fichier.getName() + "\"")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(fichier.getFile());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
 
     @GetMapping("/child")
     public ResponseEntity<?> getAllFoldersChildren(@RequestParam int parentId) {

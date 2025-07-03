@@ -37,16 +37,22 @@ public class PictureControllers {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createPicture(@RequestParam String name, @RequestParam BreveEntity breveId, @RequestParam MultipartFile imageFile) {
+    public ResponseEntity<?> createPicture(@RequestParam String name, @RequestParam int breveId, @RequestParam MultipartFile imageFile) {
         try {
-            Optional<PictureEntity> alreadyExistEntry = pictureRepository.findPictureByBreveIdAndName(breveId, name);
+            BreveEntity breveEntity = breveServices.getBreveById(breveId);
+            if (breveEntity == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Brève avec l'ID " + breveId + " non trouvée.");
+            }
+
+            Optional<PictureEntity> alreadyExistEntry = pictureRepository.findPictureByBreveIdAndName(breveEntity, name);
             if (alreadyExistEntry.isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body("Le nom de photo '" + name + "' existe déjà pour cette brève.");
             }
             PictureEntity picture = new PictureEntity();
             picture.setName(name);
-            picture.setBreveId(breveId);
+            picture.setBreveId(breveEntity);
             picture.setImage(imageFile.getBytes());
             PictureEntity addPicture = pictureServices.savePicture(picture);
             return ResponseEntity.status(HttpStatus.CREATED).body(addPicture);

@@ -84,8 +84,10 @@ public class BreveControllers {
         }
     }
 
-    @PatchMapping("/update")
+    @PostMapping("/update")
     public ResponseEntity<BreveEntity> updateBreve(@RequestParam int id, @RequestBody Map<String, Object> updates) {
+        System.out.println("Requête PATCH reçue : " + updates);
+
         try {
             BreveEntity updatedBreve = breveServices.updateBreve(id, updates);
             return new ResponseEntity<>(updatedBreve, HttpStatus.OK);
