@@ -34,7 +34,11 @@ public class ContributeurControllers {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ContributeurEntity> createContributeur(@RequestBody ContributeurEntity contributeur) {
+    public ResponseEntity<ContributeurEntity> createContributeur(@RequestParam int id, @RequestParam String name) {
+        BreveEntity breve = breveServices.getBreveById(id);
+        ContributeurEntity contributeur = new ContributeurEntity();
+        contributeur.setBreveId(breve);
+        contributeur.setName(name);
         ContributeurEntity addContributeur = contributeurService.saveContributeur(contributeur);
         return ResponseEntity.status(HttpStatus.CREATED).body(addContributeur);
     }

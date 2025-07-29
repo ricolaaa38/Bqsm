@@ -134,12 +134,13 @@ public class BreveServices {
                     && data.containsKey("Longitude") && data.containsKey("Contenu")) {
                 BreveEntity breve = new BreveEntity();
                 breve.setBqsmNumb(data.get("BqsmNum"));
-                try {
-                    LocalDate date = LocalDate.parse(data.get("Date"), dateFormatter);
-                    breve.setDate(date.atStartOfDay());
-                } catch (DateTimeParseException e) {
-                    throw new IllegalArgumentException("Format de date invalide : " + data.get("Date"), e);
-                }
+//                try {
+//                    LocalDate date = LocalDate.parse(data.get("Date"), dateFormatter);
+//                    breve.setDate(date.atStartOfDay());
+//                } catch (DateTimeParseException e) {
+//                    throw new IllegalArgumentException("Format de date invalide : " + data.get("Date"), e);
+//                }
+                breve.setDate(LocalDate.parse(data.get("Date")));
                 breve.setTitre(data.get("Titre"));
                 breve.setCategorie(data.get("Categorie"));
                 breve.setZone(data.get("Zone_lieu"));
@@ -159,6 +160,16 @@ public class BreveServices {
         }
     }
 
+    public BreveEntity saveBreve(BreveEntity breve) {
+        try {
+
+            logger.info("Saving Breve: {}", breve);
+            return breveRepository.save(breve);
+        } catch (Exception e) {
+            throw new ServiceException("Échec de sauvegarde de la Breve", e);
+        }
+    }
+
     public BreveEntity updateBreve(int id, Map<String, Object> updates) {
         BreveEntity existingBreve = breveRepository.findById(id)
                 .orElseThrow(() -> new BrevesNotFoundException("Breve introuvable avec l'ID : " + id));
@@ -171,7 +182,7 @@ public class BreveServices {
                     existingBreve.setBqsmNumb((String) value);
                     break;
                 case "date":
-                    existingBreve.setDate(LocalDate.parse((String) value).atStartOfDay());
+                    existingBreve.setDate(LocalDate.from(LocalDate.parse((String) value).atStartOfDay()));
                     break;
                 case "titre":
                     existingBreve.setTitre((String) value);

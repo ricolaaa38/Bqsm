@@ -123,5 +123,4 @@ public class WordDocumentService {
                 text.startsWith(LONGITUDE_MARKER) ||
                 text.startsWith(CONTENU_MARKER);
     }
-
 }

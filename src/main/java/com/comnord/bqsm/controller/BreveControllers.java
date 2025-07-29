@@ -84,6 +84,16 @@ public class BreveControllers {
         }
     }
 
+    @PostMapping("/create")
+    public ResponseEntity<BreveEntity> createBreve(@RequestBody BreveEntity breve) {
+        try {
+            BreveEntity createdBreve = breveServices.saveBreve(breve);
+            return new ResponseEntity<>(createdBreve, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @PostMapping("/update")
     public ResponseEntity<BreveEntity> updateBreve(@RequestParam int id, @RequestBody Map<String, Object> updates) {
         System.out.println("Requête PATCH reçue : " + updates);
