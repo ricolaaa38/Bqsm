@@ -37,17 +37,14 @@ public class LinkControllers {
     public ResponseEntity<?> createLink(@RequestBody LinkEntity link) {
         Optional<LinkEntity> linkAlreadyExists = linkRepository.findLinkByBreveIdAndLink(link.getBreveId(), link.getLink());
         Optional<LinkEntity> nameAlreadyExists = linkRepository.findLinkByBreveIdAndName(link.getBreveId(), link.getName());
-
         if (linkAlreadyExists.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body("Le lien '" + link.getLink() + "' existe déjà pour cette brève.");
         }
-
         if (nameAlreadyExists.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body("Le nom de lien '" + link.getName() + "' existe déjà pour cette breve.");
         }
-
         LinkEntity addLink = linkServices.saveLink(link);
         return ResponseEntity.status(HttpStatus.CREATED).body(addLink);
     }

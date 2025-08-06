@@ -66,6 +66,19 @@ public class BreveControllers {
         return ResponseEntity.ok(breves);
     }
 
+    @GetMapping("/export")
+    public ResponseEntity<List<BreveEntity>> exportAllFilteredBreves(
+            @RequestParam(required = false) String zone,
+            @RequestParam(required = false) String categorie,
+            @RequestParam(required = false) String intervenant,
+            @RequestParam(required = false) String contributeur,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate
+    ) {
+        List<BreveEntity> breves = breveServices.getAllFilteredBreves(zone, categorie, intervenant, contributeur, startDate, endDate);
+        return ResponseEntity.ok(breves);
+    }
+
     @GetMapping("/sorted")
     public ResponseEntity<Page<BreveEntity>> getAllBrevesSortedByDate(
             @RequestParam(defaultValue = "0") int page,

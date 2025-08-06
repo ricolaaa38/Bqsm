@@ -23,4 +23,6 @@ public class LinkEntity {
     @Column(name = "link", nullable = false)
     private String link;
 
+    @Column(name = "type_lien", nullable = false)
+    private String typeLink;
 }

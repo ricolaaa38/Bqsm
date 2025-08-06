@@ -22,9 +22,6 @@ public class LinkServices {
     public List<LinkEntity> getLinksByBreveId(BreveEntity breveId) {
         try {
             List<LinkEntity> links = linkRepository.findAllLinksByBreveId(breveId);
-            if (links.isEmpty()) {
-                throw new LinksNotFoundException("No links found for the Breve with ID: " + breveId.getId());
-            }
             return links;
         } catch (Exception e) {
             throw new ServiceException("Failed to retrieve links", e);

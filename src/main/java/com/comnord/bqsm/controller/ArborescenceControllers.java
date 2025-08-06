@@ -60,6 +60,19 @@ public class ArborescenceControllers {
         }
     }
 
+    @GetMapping("/file-meta/{id}")
+    public ResponseEntity<FichierArborescenceEntity> getFileMeta(@PathVariable int id) {
+        Optional<FichierArborescenceEntity> fichierOpt = fichierArborescenceRepository.findById(id);
+        return fichierOpt.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    }
+
+    // Endpoint pour les métadonnées d'un dossier
+    @GetMapping("/folder-meta/{id}")
+    public ResponseEntity<DossierArborescenceEntity> getFolderMeta(@PathVariable int id) {
+        Optional<DossierArborescenceEntity> dossierOpt = dossierArborescenceRepository.findById(id);
+        return dossierOpt.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    }
+
 
     @GetMapping("/child")
     public ResponseEntity<?> getAllFoldersChildren(@RequestParam int parentId) {
