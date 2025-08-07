@@ -61,7 +61,7 @@ public class BreveServices {
                 LocalDateTime start = LocalDateTime.parse(startDate, formatter);
                 LocalDateTime end = LocalDateTime.parse(endDate, formatter);
                 spec = spec.and((root, query, criteriaBuilder) ->
-                        criteriaBuilder.between(root.get("date"), start, end));
+                        criteriaBuilder.between(root.get("bqsmNumb"), start, end));
             }
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("Invalid date format. Expected ISO format (e.g., 2025-01-01T00:00:00).", e);
@@ -93,7 +93,7 @@ public class BreveServices {
                 LocalDateTime start = LocalDateTime.parse(startDate, formatter);
                 LocalDateTime end = LocalDateTime.parse(endDate, formatter);
                 spec = spec.and((root, query, criteriaBuilder) ->
-                        criteriaBuilder.between(root.get("date"), start, end));
+                        criteriaBuilder.between(root.get("bqsmNumb"), start, end));
             }
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("Invalid date format. Expected ISO format (e.g., 2025-01-01T00:00:00).", e);
@@ -103,7 +103,7 @@ public class BreveServices {
     }
 
     public Page<BreveEntity> getAllBrevesByPage(int page, int size, String zone, String categorie, String intervenant, String contributeur, String startDate, String endDate) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "date"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "bqsmNumb"));
 
         Specification<BreveEntity> spec = Specification.where(null);
 
@@ -136,7 +136,7 @@ public class BreveServices {
                 LocalDateTime start = LocalDateTime.parse(startDate, formatter);
                 LocalDateTime end = LocalDateTime.parse(endDate, formatter);
                 spec = spec.and((root, query, criteriaBuilder) ->
-                        criteriaBuilder.between(root.get("date"), start, end));
+                        criteriaBuilder.between(root.get("bqsmNumb"), start, end));
             }
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("Invalid date format. Expected ISO format (e.g., 2025-01-01T00:00:00).", e);
@@ -146,7 +146,7 @@ public class BreveServices {
     }
 
     public Page<BreveEntity> getAllBrevesSortedByDate(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "date"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "bqsmNumb"));
         return breveRepository.findAllByOrderByDateDesc(pageable);
     }
 
@@ -165,7 +165,7 @@ public class BreveServices {
                     && data.containsKey("Zone_lieu") && data.containsKey("Pays") && data.containsKey("Latitude")
                     && data.containsKey("Longitude") && data.containsKey("Contenu")) {
                 BreveEntity breve = new BreveEntity();
-                breve.setBqsmNumb(data.get("BqsmNum"));
+                breve.setBqsmNumb(LocalDate.parse(data.get("BqsmNum"), dateFormatter));
                 try {
                     LocalDate date = LocalDate.parse(data.get("Date"), dateFormatter);
                     breve.setDate(date);
@@ -211,7 +211,7 @@ public class BreveServices {
                 case "id":
                     break;
                 case "bqsmNumb":
-                    existingBreve.setBqsmNumb((String) value);
+                    existingBreve.setBqsmNumb(LocalDate.from(LocalDate.parse((String) value).atStartOfDay()));
                     break;
                 case "date":
                     existingBreve.setDate(LocalDate.from(LocalDate.parse((String) value).atStartOfDay()));

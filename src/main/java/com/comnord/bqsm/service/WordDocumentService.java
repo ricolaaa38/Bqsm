@@ -20,7 +20,7 @@ public class WordDocumentService {
     private static final Logger  logger = LoggerFactory.getLogger(WordDocumentService.class);
 
     private static final String BREVES_MARKER = "Breves";
-    private static final String BQSM_NUM_MARKER = "BqsmNum";
+    private static final String BQSM_DATE_MARKER = "BqsmNum";
     private static final String DATE_MARKER = "Date";
     private static final String TITRE_MARKER = "Titre";
     private static final String CATEGORIE_MARKER = "Categorie";
@@ -79,7 +79,7 @@ public class WordDocumentService {
 
     private String getTextAfterMarker(String text, String currentKey) {
         switch (currentKey) {
-            case "BqsmNum": return text.substring(BQSM_NUM_MARKER.length()).trim();
+            case "BqsmNum": return text.substring(BQSM_DATE_MARKER.length()).trim();
             case "Date": return text.substring(DATE_MARKER.length()).trim();
             case "Titre": return text.substring(TITRE_MARKER.length()).trim();
             case "Categorie": return text.substring(CATEGORIE_MARKER.length()).trim();
@@ -93,7 +93,7 @@ public class WordDocumentService {
     }
 
     private String getKeyForMarker(String text) {
-        if (text.startsWith(BQSM_NUM_MARKER)) return "BqsmNum";
+        if (text.startsWith(BQSM_DATE_MARKER)) return "BqsmNum";
         if (text.startsWith(DATE_MARKER)) return "Date";
         if (text.startsWith(TITRE_MARKER)) return "Titre";
         if (text.startsWith(CATEGORIE_MARKER)) return "Categorie";
@@ -113,7 +113,7 @@ public class WordDocumentService {
     }
 
     private boolean startWithAnyMarker(String text) {
-        return text.startsWith(BQSM_NUM_MARKER) ||
+        return text.startsWith(BQSM_DATE_MARKER) ||
                 text.startsWith(DATE_MARKER) ||
                 text.startsWith(TITRE_MARKER) ||
                 text.startsWith(CATEGORIE_MARKER) ||

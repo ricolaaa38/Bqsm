@@ -20,7 +20,7 @@ public class BreveEntity {
     private int id;
 
     @Column(name = "bqsm_num", nullable = false)
-    private String bqsmNumb;
+    private LocalDate bqsmNumb;
 
     @Column(name = "date", nullable = false)
     private LocalDate date;
