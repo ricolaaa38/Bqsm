@@ -4,6 +4,7 @@ import com.comnord.bqsm.exception.DossierArborescenceNotFoundException;
 import com.comnord.bqsm.model.DossierArborescenceEntity;
 import com.comnord.bqsm.model.FichierArborescenceEntity;
 import com.comnord.bqsm.model.dto.DossierDTO;
+import com.comnord.bqsm.model.dto.FichierMetaDTO;
 import com.comnord.bqsm.model.dto.FolderChildrenDTO;
 import com.comnord.bqsm.repository.DossierArborescenceRepository;
 import com.comnord.bqsm.repository.FichierArborescenceRepository;
@@ -44,6 +45,21 @@ public class ArborescenceControllers {
     @GetMapping("/files")
     public ResponseEntity<Iterable<FichierArborescenceEntity>> getAllFiles() {
         return ResponseEntity.ok(fichierArborescenceServices.getAllFiles());
+    }
+
+    // src/main/java/com/comnord/bqsm/controller/ArborescenceControllers.java
+
+    @GetMapping("/files-meta")
+    public ResponseEntity<List<FichierMetaDTO>> getAllFilesMeta() {
+        List<FichierArborescenceEntity> files = (List<FichierArborescenceEntity>) fichierArborescenceServices.getAllFiles();
+        List<FichierMetaDTO> metaList = files.stream()
+                .map(f -> new FichierMetaDTO(
+                        f.getId(),
+                        f.getParentId() != null ? f.getParentId().getId() : null,
+                        f.getName()
+                ))
+                .toList();
+        return ResponseEntity.ok(metaList);
     }
 
     @GetMapping("/get-file/{id}")
