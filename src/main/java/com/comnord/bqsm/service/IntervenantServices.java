@@ -22,9 +22,7 @@ public class IntervenantServices {
     public List<IntervenantEntity> getAllIntervenantsByBreveId(BreveEntity breveId) {
        try {
            List<IntervenantEntity> intervenants = intervenantRepository.findAllIntervenantsByBreveId(breveId);
-           if (intervenants.isEmpty()) {
-               throw new IntervenantsNotFoundException("Aucun intervenant trouvé pour la brève avec l'Id : " + breveId.getId());
-           }
+
            return intervenants;
        } catch (IntervenantsNotFoundException e) {
            throw e;

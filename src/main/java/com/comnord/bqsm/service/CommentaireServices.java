@@ -23,9 +23,6 @@ public class CommentaireServices {
     public List<CommentaireEntity> getAllCommentairesByBreveId(BreveEntity breveId) {
      try {
          List<CommentaireEntity> commentaires = commentaireRepository.findAllCommentairesByBreveId(breveId);
-         if (commentaires.isEmpty()) {
-             throw new CommentairesNotFoundException("Aucun commentaire trouvé pour la brève avec l'ID : " + breveId.getId());
-         }
          return commentaires;
      } catch (CommentairesNotFoundException e) {
          throw e;

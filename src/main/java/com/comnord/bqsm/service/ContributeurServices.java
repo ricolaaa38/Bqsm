@@ -22,9 +22,7 @@ public class ContributeurServices {
     public List<ContributeurEntity> getAllContributeursByBreveId(BreveEntity breveId) {
          try {
              List<ContributeurEntity> contributeurs = contributeurRepository.findAllContributeursByBreveId(breveId);
-             if (contributeurs.isEmpty()) {
-                 throw new ContributeursNotFoundException("Aucun contributeur trouvé pour la brève avec l'id : " + breveId.getId());
-             }
+
              return contributeurs;
          } catch (ContributeursNotFoundException e) {
              throw e;

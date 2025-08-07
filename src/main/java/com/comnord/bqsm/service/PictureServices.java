@@ -22,9 +22,6 @@ public class PictureServices {
     public List<PictureEntity> getAllPictureByBreveId(BreveEntity breveId) {
         try {
             List<PictureEntity> pictures = pictureRepository.findAllPicturesByBreveId(breveId);
-            if (pictures.isEmpty()) {
-                throw new PicturesNotFoundException("Aucune image trouvée pour la brève avec l'id : " + breveId.getId());
-            }
             return pictures;
         } catch (PicturesNotFoundException e) {
             throw e;
