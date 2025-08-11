@@ -19,13 +19,22 @@ public class IntervenantServices {
     @Autowired
     private BreveServices breveServices;
 
+    public IntervenantEntity getIntervenantById(int id) {
+        try {
+            return intervenantRepository.findById(id)
+                    .orElseThrow(() -> new IntervenantsNotFoundException("Intervenant not found with id: " + id));
+        } catch (Exception e) {
+            throw new ServiceException("Failed to retrieve intervenant with id: " + id, e);
+        }
+    }
+
     public List<IntervenantEntity> getAllIntervenantsByBreveId(BreveEntity breveId) {
        try {
            List<IntervenantEntity> intervenants = intervenantRepository.findAllIntervenantsByBreveId(breveId);
 
            return intervenants;
        } catch (IntervenantsNotFoundException e) {
-           throw e;
+           return null;
        } catch (Exception e) {
            throw new ServiceException("Failed to retrieve intervenants", e);
        }
@@ -58,7 +67,8 @@ public class IntervenantServices {
 
     public void deleteIntervenantById(int id) {
         try {
-            intervenantRepository.deleteById(id);
+            IntervenantEntity intervenant = intervenantRepository.findById(id).orElseThrow(() -> new IntervenantsNotFoundException("Intervenant not found with id: " + id));
+            intervenantRepository.delete(intervenant);
         } catch (Exception e) {
             throw new ServiceException("Failed to delete intervenant with id: " + id, e);
         }

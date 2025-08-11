@@ -70,6 +70,10 @@ public class BreveEntity {
     @OneToMany(mappedBy = "breveId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommentaireEntity> commentaires;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "breveId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<IconByBreve> iconsByBreve;
+
 
 
 }

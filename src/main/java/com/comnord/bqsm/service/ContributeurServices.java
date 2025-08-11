@@ -19,13 +19,21 @@ public class ContributeurServices {
     @Autowired
     private BreveServices breveServices;
 
+    public ContributeurEntity getContributeurById(int id) {
+        try {
+            return contributeurRepository.findById(id)
+                    .orElseThrow(() -> new ContributeursNotFoundException("Contributeur not found with id: " + id));
+        } catch (Exception e) {
+            throw new ServiceException("Failed to retrieve contributeur with id: " + id, e);
+        }
+    }
+
     public List<ContributeurEntity> getAllContributeursByBreveId(BreveEntity breveId) {
          try {
              List<ContributeurEntity> contributeurs = contributeurRepository.findAllContributeursByBreveId(breveId);
-
-             return contributeurs;
+             return contributeurs ;
          } catch (ContributeursNotFoundException e) {
-             throw e;
+             return null;
          } catch (Exception e) {
              throw new ServiceException("Failed to retrieve contributeurs", e);
          }
@@ -58,7 +66,8 @@ public class ContributeurServices {
 
     public void deleteContributeurById(int id) {
         try {
-            contributeurRepository.deleteById(id);
+            ContributeurEntity contributeur = contributeurRepository.findById(id).orElseThrow(() -> new ContributeursNotFoundException("Contributeur not found with id: " + id));
+            contributeurRepository.delete(contributeur);
         } catch (Exception e) {
             throw new ServiceException("Failed to delete contributeur with ID: " + id, e);
         }

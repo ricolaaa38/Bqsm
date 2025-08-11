@@ -1,7 +1,10 @@
 package com.comnord.bqsm.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.List;
 
 @Entity
 @Table(name = "intervenants")
@@ -19,4 +22,8 @@ public class IntervenantEntity {
 
     @Column(name = "name", nullable = false)
     private String name;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "intervenantId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<IconByBreve> iconsByBreve;
 }
