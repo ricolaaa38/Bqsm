@@ -38,7 +38,7 @@ public class BreveServices {
        return breves;
     }
 
-    public List<BreveEntity> getAllBrevesForMap(String zone, String categorie, String intervenant, String contributeur, String startDate, String endDate) {
+    public List<BreveEntity> getAllBrevesForMap(String zone, String categorie, String intervenant, String contributeur, String startDate, String endDate, String date) {
         Specification<BreveEntity> spec = Specification.where(null);
 
         if (zone != null && !zone.isEmpty()) {
@@ -63,6 +63,11 @@ public class BreveServices {
                 spec = spec.and((root, query, criteriaBuilder) ->
                         criteriaBuilder.between(root.get("bqsmNumb"), start, end));
             }
+            if (date != null && !date.isEmpty()) {
+                LocalDateTime specificDate = LocalDateTime.parse(date, formatter);
+                spec = spec.and((root, query, criteriaBuilder) ->
+                        criteriaBuilder.equal(root.get("date"), specificDate));
+            }
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("Invalid date format. Expected ISO format (e.g., 2025-01-01T00:00:00).", e);
         }
@@ -70,7 +75,7 @@ public class BreveServices {
         return breveRepository.findAll(spec);
     }
 
-    public List<BreveEntity> getAllFilteredBreves(String zone, String categorie, String intervenant, String contributeur, String startDate, String endDate) {
+    public List<BreveEntity> getAllFilteredBreves(String zone, String categorie, String intervenant, String contributeur, String startDate, String endDate, String date) {
         Specification<BreveEntity> spec = Specification.where(null);
 
         if (zone != null && !zone.isEmpty()) {
@@ -95,6 +100,11 @@ public class BreveServices {
                 spec = spec.and((root, query, criteriaBuilder) ->
                         criteriaBuilder.between(root.get("bqsmNumb"), start, end));
             }
+            if (date != null && !date.isEmpty()) {
+                LocalDateTime specificDate = LocalDateTime.parse(date, formatter);
+                spec = spec.and((root, query, criteriaBuilder) ->
+                        criteriaBuilder.equal(root.get("date"), specificDate));
+            }
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("Invalid date format. Expected ISO format (e.g., 2025-01-01T00:00:00).", e);
         }
@@ -102,7 +112,7 @@ public class BreveServices {
         return breveRepository.findAll(spec);
     }
 
-    public Page<BreveEntity> getAllBrevesByPage(int page, int size, String zone, String categorie, String intervenant, String contributeur, String startDate, String endDate) {
+    public Page<BreveEntity> getAllBrevesByPage(int page, int size, String zone, String categorie, String intervenant, String contributeur, String startDate, String endDate, String date) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "bqsmNumb"));
 
         Specification<BreveEntity> spec = Specification.where(null);
@@ -137,6 +147,11 @@ public class BreveServices {
                 LocalDateTime end = LocalDateTime.parse(endDate, formatter);
                 spec = spec.and((root, query, criteriaBuilder) ->
                         criteriaBuilder.between(root.get("bqsmNumb"), start, end));
+            }
+            if (date != null && !date.isEmpty()) {
+                LocalDateTime specificDate = LocalDateTime.parse(date, formatter);
+                spec = spec.and((root, query, criteriaBuilder) ->
+                        criteriaBuilder.equal(root.get("date"), specificDate));
             }
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("Invalid date format. Expected ISO format (e.g., 2025-01-01T00:00:00).", e);

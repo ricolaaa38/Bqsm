@@ -42,9 +42,10 @@ public class BreveControllers {
             @RequestParam(required = false) String intervenant,
             @RequestParam(required = false) String contributeur,
             @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) String date
     ) {
-        List<BreveEntity> breves = breveServices.getAllBrevesForMap(zone, categorie, intervenant, contributeur, startDate, endDate);
+        List<BreveEntity> breves = breveServices.getAllBrevesForMap(zone, categorie, intervenant, contributeur, startDate, endDate, date);
         List<BreveCoordDTO> dtos = breves.stream()
                 .map(BreveCoordDTO::new)
                 .toList();
@@ -60,9 +61,10 @@ public class BreveControllers {
             @RequestParam(required = false) String intervenant,
             @RequestParam(required = false) String contributeur,
             @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate) {
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) String date) {
 
-        Page<BreveEntity> breves = breveServices.getAllBrevesByPage(page, size, zone, categorie, intervenant, contributeur, startDate, endDate);
+        Page<BreveEntity> breves = breveServices.getAllBrevesByPage(page, size, zone, categorie, intervenant, contributeur, startDate, endDate, date);
         return ResponseEntity.ok(breves);
     }
 
@@ -73,9 +75,10 @@ public class BreveControllers {
             @RequestParam(required = false) String intervenant,
             @RequestParam(required = false) String contributeur,
             @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) String date
     ) {
-        List<BreveEntity> breves = breveServices.getAllFilteredBreves(zone, categorie, intervenant, contributeur, startDate, endDate);
+        List<BreveEntity> breves = breveServices.getAllFilteredBreves(zone, categorie, intervenant, contributeur, startDate, endDate, date);
         return ResponseEntity.ok(breves);
     }
 
